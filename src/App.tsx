@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Controls from "./control";
 import MusicPlayer from "./musicplayer";
 
