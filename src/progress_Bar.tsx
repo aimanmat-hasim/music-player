@@ -8,7 +8,7 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentTime, duration, onSeek }) => {
     const formatTime = (time: number) => {
-        if (!Number.isFinite(time) || time < 0) return "0:00";//
+        if (!Number.isFinite(time) || time < 0) return "0:00";//finite ensuring number or value is well define, such time , cant be negative , so it default valued 
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;

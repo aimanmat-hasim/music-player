@@ -4,6 +4,7 @@ type Track = {
     id: number;
     title: string;
     artist: string;
+    artwork: string;
 };
 
 interface TrackListProps {
@@ -27,7 +28,7 @@ const TrackList: React.FC<TrackListProps> = ({ songs, currentIndex, onSelectTrac
                     return (
                         <li
                             key={song.id}
-                            onClick={() => onSelectTrack(index)}
+                            onClick={() => onSelectTrack(song.id)}
                             style={{
                                 padding: "8px 10px",
                                 cursor: "pointer",

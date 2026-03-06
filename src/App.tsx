@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Controls from "./control";
+import React, { useState } from 'react';
 import MusicPlayer from "./musicplayer";
+import TrackList from "./track_list";
 
 // Define the Track type (so TS knows the object shape)
 type Track = {
@@ -8,16 +8,17 @@ type Track = {
     title: string;
     artist: string;
     src: string;
+    artwork: string;
 };
 
 // Static list of tracks (data, not state)
 
 const TRACKS: Track[] = [
-    { id: 1, title: 'Lautan', artist: 'Yuna', src: "/assets/songs/lautan.mp3" },
-    { id: 2, title: 'Akad', artist: 'Payung Teduh', src: "/assets/songs/akad.mp3" },
-    { id: 3, title: 'Sency', artist: 'dia & Tenxi', src: "/assets/songs/sency.mp3" },
-    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh', src: "/assets/songs/bunga-di-telinga.mp3" },
-    { id: 5, title: 'Sempurna', artist: 'Insomniacs', src: "/assets/songs/sempurna.mp3" },
+    { id: 1, title: 'Lautan',         artist: 'Yuna',          src: "/assets/songs/lautan.mp3",          artwork: "/assets/artwork/lautan.jpg" },
+    { id: 2, title: 'Akad',           artist: 'Payung Teduh',  src: "/assets/songs/akad.mp3",            artwork: "/assets/artwork/akad.jpg" },
+    { id: 3, title: 'Sency',          artist: 'dia & Tenxi',   src: "/assets/songs/sency.mp3",           artwork: "/assets/artwork/sency.jpg" },
+    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh',  src: "/assets/songs/bunga-di-telinga.mp3", artwork: "/assets/artwork/bunga-di-telinga.jpg" },
+    { id: 5, title: 'Sempurna',       artist: 'Insomniacs',    src: "/assets/songs/sempurna.mp3",        artwork: "/assets/artwork/sempurna.jpg" },
 ];
 
 // spotify-like repeat modes 
@@ -37,6 +38,12 @@ const App1: React.FC = () => {
 
     const currentTrack = TRACKS[currentIndex];
 
+    //helper so that it do not repeat setCurrentIndex logic
+    const goToIndex = (index: number) => {
+        const safe = Math.max(0, Math.min(index, TRACKS.length - 1));
+        setCurrentIndex(safe);
+    };
+    
     const togglePlayPause = () => {
         setIsPlaying((prev) => !prev);
     };
@@ -77,7 +84,7 @@ const App1: React.FC = () => {
             }
             //take look for math 
 
-            setHistory((h) => [...h, currentIndex]);//what do you mean...h 
+            setHistory((h) => [...h, currentIndex]);//save current to history, so prev can go back 
             goToIndex(next);
             return;
         }
@@ -103,12 +110,12 @@ const App1: React.FC = () => {
         if (isShuffle){
             setHistory((h) => {
                 if (h.length === 0) return h;
-                const copy = [...h];
-                const prevIndex = copy.pop() as number;
+                const copy = [...h]; // creates shallow copy "copy" avoid mutate the original state directly
+                const prevIndex = copy.pop() as number;//copy.pop remove the last item from the array and returns it
                 goToIndex(prevIndex);
                 return copy;
             });
-            return;//why double return 
+            return;// return here to avoid running normal previous logic
         }
 
         const isFirst = currentIndex === 0;
@@ -125,24 +132,25 @@ const App1: React.FC = () => {
 
     //When audio ends naturally 
     const handleEnded = () => {
-        if (repeatMode === 'one') {
-            // MusicPlayer will restart when we keep same index + isPlaying true,
-            // but simplest is: call next logic and it will stay on same song.
-            handleNext();
-            return;
-        }
-
         handleNext();
+    };
+
+    const handleSelectTrack = (id: number) => {
+        const index = TRACKS.findIndex((t) => t.id === id);
+        if (index !== -1) {
+            goToIndex(index);
+            setIsPlaying(true);
+        }
     };
 
     return (
         <div className="app">
-            <MusicPlayer currentTrack={currentTrack} isPlaying={isPlaying} onEnded={handleEnded} />
-
-            <Controls
+            <MusicPlayer
+                currentTrack={currentTrack}
                 isPlaying={isPlaying}
                 isShuffle={isShuffle}
-                isRepeat={repeatMode !== 'off'}// for now, green when any repeat is on 
+                isRepeat={repeatMode !== 'off'}
+                onEnded={handleEnded}
                 onTogglePlayPause={togglePlayPause}
                 onNext={handleNext}
                 onPrevious={handlePrevious}
@@ -150,10 +158,11 @@ const App1: React.FC = () => {
                 onToggleRepeat={ToggleRepeat}
             />
 
-            {/* Optional debug (remove later)*/}
-            {/* <pre style={{ color: 'white' }}>
-                {JSON.stringify({ currentIndex, isPlaying, isShuffle, repeatMode, history }, null, 2)}
-            </pre> */}   
+            <TrackList
+                songs={TRACKS}
+                currentIndex={currentIndex}
+                onSelectTrack={handleSelectTrack}
+            />
         </div>
     );
 };

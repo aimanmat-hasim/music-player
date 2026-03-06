@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ProgressBar from './progress_Bar';
+import Control from './control';
 
 type CurrentTrack = {
     title: string;
@@ -10,10 +11,29 @@ type CurrentTrack = {
 interface MusicPlayerProps {
     currentTrack: CurrentTrack;
     isPlaying: boolean;
+    isShuffle:boolean;
+    isRepeat:boolean;
+
+    onTogglePlayPause: () => void;
+    onNext: () => void;
+    onToggleRepeat: () => void;
+    onToggleShuffle: () => void;
     onEnded: () => void;
+    onPrevious: () => void; // Added onPrevious prop
 }
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ currentTrack, isPlaying, onEnded }) => {
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ 
+    currentTrack,
+    isPlaying,
+    isShuffle,
+    isRepeat,
+    onTogglePlayPause,
+    onNext,
+    onToggleRepeat,
+    onToggleShuffle,
+    onEnded, 
+    onPrevious 
+}) => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Progress state
@@ -53,6 +73,20 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ currentTrack, isPlaying, onEn
         setCurrentTime(time);
     };
 
+    // Spotify-like Previous behavior 3-seconds rule
+    const handlePreviousSmart = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        if (audio.currentTime > 3) {
+            audio.currentTime = 0;
+            setCurrentTime(0);
+            return;
+        }
+
+        onPrevious();
+    };
+
     const onTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) =>
         setCurrentTime(e.currentTarget.currentTime);
 
@@ -75,6 +109,17 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ currentTrack, isPlaying, onEn
                 currentTime={currentTime}
                 duration={duration}
                 onSeek={handleSeek}
+            />
+
+            <Control
+                isPlaying={isPlaying}
+                isShuffle={isShuffle}
+                isRepeat={isRepeat}
+                onTogglePlayPause={onTogglePlayPause}
+                onNext={onNext}
+                onPrevious={handlePreviousSmart} 
+                onToggleShuffle={onToggleShuffle}
+                onToggleRepeat={onToggleRepeat}
             />
         </div>
     );
