@@ -31,7 +31,7 @@ const Controls: React.FC<ControlsProps> = ({
             <button 
             type="button"
             onClick={onToggleShuffle}
-            aria-label="Shuffle"//
+            aria-label="Shuffle"
             style={{ color: isShuffle ? '#1DB954' : 'white' }}>
                 <FaRandom />
             </button>
@@ -40,13 +40,14 @@ const Controls: React.FC<ControlsProps> = ({
             <button type="button" onClick={onPrevious} aria-label="Previous">
                 <FaStepBackward />
             </button>
-// Type button //
+
             {/*Play/Pause Button */}
             <button
-            type="button"
-            onClick={onTogglePlayPause}
-            aria-label={isPlaying ? "Pause" : "Play"}
-            className="main-play-btn">
+                type="button"
+                onClick={onTogglePlayPause}
+                aria-label={isPlaying ? "Pause" : "Play"}
+                className="main-play-btn"
+            >
                 {isPlaying ? <FaPause size={30} /> : <FaPlay size={30} />}
             </button>
 
