@@ -6,6 +6,7 @@ type CurrentTrack = {
     title: string;
     artist: string;
     src: string;
+    artwork: string;
 };
 
 interface MusicPlayerProps {
@@ -104,6 +105,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 onTimeUpdate={onTimeUpdate}
                 onLoadedMetadata={onLoadedMetadata}
             />
+
+            <img
+                src={currentTrack.artwork}
+                alt={currentTrack.title}
+                className="artwork"
+                onError={(e) => {
+                    e.currentTarget.style.backgroundColor = '#888';
+                    e.currentTarget.removeAttribute('src');
+                }}
+            />
+            <p className="track-artist">{currentTrack.artist}</p>
+            <p className="track-title">{currentTrack.title}</p>
 
             <ProgressBar
                 currentTime={currentTime}
