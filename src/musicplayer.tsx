@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { FaRandom, FaRedo } from 'react-icons/fa';
 import ProgressBar from './progress_Bar';
 import Control from './control';
 
@@ -95,7 +96,30 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         setDuration(e.currentTarget.duration);
 
     return (
-        <div className="audio-engine">
+        <div className="player-card">
+            <div className="card-bg" style={{ backgroundImage: `url(${currentTrack.artwork})` }} />
+            <div className="card-overlay" />
+
+            <button
+                type="button"
+                className="corner-btn btn-repeat"
+                onClick={onToggleRepeat}
+                aria-label="Repeat"
+                style={{ color: isRepeat ? '#1DB954' : 'rgba(255,255,255,0.75)' }}
+            >
+                <FaRedo />
+            </button>
+
+            <button
+                type="button"
+                className="corner-btn btn-shuffle"
+                onClick={onToggleShuffle}
+                aria-label="Shuffle"
+                style={{ color: isShuffle ? '#1DB954' : 'rgba(255,255,255,0.75)' }}
+            >
+                <FaRandom />
+            </button>
+
             <audio
                 ref={audioRef}
                 src={currentTrack.src}
@@ -106,34 +130,32 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 onLoadedMetadata={onLoadedMetadata}
             />
 
-            <img
-                src={currentTrack.artwork}
-                alt={currentTrack.title}
-                className="artwork"
-                onError={(e) => {
-                    e.currentTarget.style.backgroundColor = '#888';
-                    e.currentTarget.removeAttribute('src');
-                }}
-            />
-            <p className="track-artist">{currentTrack.artist}</p>
-            <p className="track-title">{currentTrack.title}</p>
+            <div className="card-content">
+                <img
+                    src={currentTrack.artwork}
+                    alt={currentTrack.title}
+                    className="artwork"
+                    onError={(e) => {
+                        e.currentTarget.style.backgroundColor = '#888';
+                        e.currentTarget.removeAttribute('src');
+                    }}
+                />
+                <p className="track-artist">{currentTrack.artist}</p>
+                <p className="track-title">{currentTrack.title}</p>
 
-            <ProgressBar
-                currentTime={currentTime}
-                duration={duration}
-                onSeek={handleSeek}
-            />
+                <ProgressBar
+                    currentTime={currentTime}
+                    duration={duration}
+                    onSeek={handleSeek}
+                />
 
-            <Control
-                isPlaying={isPlaying}
-                isShuffle={isShuffle}
-                isRepeat={isRepeat}
-                onTogglePlayPause={onTogglePlayPause}
-                onNext={onNext}
-                onPrevious={handlePreviousSmart} 
-                onToggleShuffle={onToggleShuffle}
-                onToggleRepeat={onToggleRepeat}
-            />
+                <Control
+                    isPlaying={isPlaying}
+                    onTogglePlayPause={onTogglePlayPause}
+                    onNext={onNext}
+                    onPrevious={handlePreviousSmart}
+                />
+            </div>
         </div>
     );
 };
