@@ -17,10 +17,10 @@ const Controls: React.FC<ControlsProps> = ({
     onPrevious,
 }) => {
     return (
-        <div className="controls-container" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <div className="controls">
 
             {/* Previous Button */}
-            <button type="button" onClick={onPrevious} aria-label="Previous">
+            <button type="button" onClick={onPrevious} aria-label="Previous" className="ctrl-btn prev">
                 <FaStepBackward />
             </button>
 
@@ -29,13 +29,13 @@ const Controls: React.FC<ControlsProps> = ({
                 type="button"
                 onClick={onTogglePlayPause}
                 aria-label={isPlaying ? "Pause" : "Play"}
-                className="main-play-btn"
+                className="ctrl-btn play"
             >
-                {isPlaying ? <FaPause size={30} /> : <FaPlay size={30} />}
+                {isPlaying ? <FaPause size={22} /> : <FaPlay size={22} />}
             </button>
 
             {/* Next Button */}
-            <button type="button" onClick={onNext} aria-label="Next">
+            <button type="button" onClick={onNext} aria-label="Next" className="ctrl-btn next">
                 <FaStepForward />
             </button>
         </div>

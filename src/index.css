@@ -130,3 +130,52 @@ button:focus-visible {
   top: 18px;
   right: 20px;
 }
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.ctrl-btn.prev,
+.ctrl-btn.next {
+  width: 42px;
+  height: 42px;
+}
+
+.ctrl-btn.play {
+  width: 52px;
+  height: 52px;
+  border-width: 2px;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.corner-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15);
+}
