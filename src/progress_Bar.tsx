@@ -19,23 +19,25 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentTime, duration, onSeek
         ? Math.min(currentTime, safeDuration || currentTime)
         : 0; //
 
-    return (
-        <div className="progress-container" style={{ width: '100%', padding: '10px 0' }}>
-            <div className="time-info" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{formatTime(safeCurrentTime)}</span>
-                <span>{formatTime(safeDuration)}</span>
-            </div>
+    const percent = safeDuration > 0 ? (safeCurrentTime / safeDuration) * 100 : 0;
 
+    return (
+        <div className="progress-container">
             <input
                 type="range"
+                className="seek-bar"
                 min={0}
                 max={safeDuration}
                 value={safeCurrentTime}
                 step={0.1}
                 onChange={(e) => onSeek(Number(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer' }}
                 aria-label="Seek"
+                style={{ '--seek-pct': `${percent}%` } as React.CSSProperties}
             />
+            <div className="time-info">
+                <span>{formatTime(safeCurrentTime)}</span>
+                <span>{formatTime(safeDuration)}</span>
+            </div>
         </div>
     );
 };
