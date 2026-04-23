@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaMusic } from 'react-icons/fa';
 import MusicPlayer from "./musicplayer";
-import TrackList from "./track_list";
 
-// Define the Track type (so TS knows the object shape)
 type Track = {
     id: number;
     title: string;
@@ -11,52 +10,83 @@ type Track = {
     artwork: string;
 };
 
-// Static list of tracks (data, not state)
-
 const TRACKS: Track[] = [
-    { id: 1, title: 'Lautan',         artist: 'Yuna',          src: "/assets/songs/lautan.mp3",          artwork: "/assets/artwork/lautan.jpg" },
-    { id: 2, title: 'Akad',           artist: 'Payung Teduh',  src: "/assets/songs/akad.mp3",            artwork: "/assets/artwork/akad.jpg" },
-    { id: 3, title: 'Sency',          artist: 'dia & Tenxi',   src: "/assets/songs/sency.mp3",           artwork: "/assets/artwork/sency.jpg" },
-    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh',  src: "/assets/songs/bunga-di-telinga.mp3", artwork: "/assets/artwork/bunga-di-telinga.jpg" },
-    { id: 5, title: 'Sempurna',       artist: 'Insomniacs',    src: "/assets/songs/sempurna.mp3",        artwork: "/assets/artwork/sempurna.jpg" },
+    { id: 1, title: 'Lautan',           artist: 'Yuna',          src: "/assets/songs/lautan.mp3",           artwork: "/assets/artwork/lautan.jpg" },
+    { id: 2, title: 'Akad',             artist: 'Payung Teduh',  src: "/assets/songs/akad.mp3",             artwork: "/assets/artwork/akad.jpg" },
+    { id: 3, title: 'Sency',            artist: 'dia & Tenxi',   src: "/assets/songs/sency.mp3",            artwork: "/assets/artwork/sency.jpg" },
+    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh',    src: "/assets/songs/bunga-di-telinga.mp3", artwork: "/assets/artwork/bunga-di-telinga.jpg" },
+    { id: 5, title: 'Sempurna',         artist: 'Insomniacs',    src: "/assets/songs/sempurna.mp3",         artwork: "/assets/artwork/sempurna.jpg" },
 ];
 
-// spotify-like repeat modes 
 type RepeatMode = 'off' | 'one' | 'all';
 
 const App1: React.FC = () => {
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
-    //Spotify-like toggles
-    const [isShuffle, setIsShuffle] = useState<boolean>(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isShuffle, setIsShuffle] = useState(false);
     const [repeatMode, setRepeatMode] = useState<RepeatMode>('off');
+    const [, setHistory] = useState<number[]>([]);
 
-    //For shuffle "Prev" behavior (go back to previously played random tracks)
-    const [history, setHistory] = useState<number[]>([]);
-    //take note history 
+    // Window open/close
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Draggable window position (offset from center)
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const posRef = useRef({ x: 0, y: 0 });
+    const isDragging = useRef(false);
+    const dragStart = useRef({ x: 0, y: 0 });
+
+    useEffect(() => { posRef.current = position; }, [position]);
+
+    useEffect(() => {
+        const onMove = (e: MouseEvent) => {
+            if (!isDragging.current) return;
+            const newPos = {
+                x: e.clientX - dragStart.current.x,
+                y: e.clientY - dragStart.current.y,
+            };
+            posRef.current = newPos;
+            setPosition(newPos);
+        };
+        const onUp = () => { isDragging.current = false; };
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+        };
+    }, []);
+
+    const handleTitlebarMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        isDragging.current = true;
+        dragStart.current = {
+            x: e.clientX - posRef.current.x,
+            y: e.clientY - posRef.current.y,
+        };
+    };
+
+    const openWindow = () => {
+        setPosition({ x: 0, y: 0 });
+        posRef.current = { x: 0, y: 0 };
+        setIsOpen(true);
+    };
 
     const currentTrack = TRACKS[currentIndex];
 
-    //helper so that it do not repeat setCurrentIndex logic
     const goToIndex = (index: number) => {
-        const safe = Math.max(0, Math.min(index, TRACKS.length - 1));
-        setCurrentIndex(safe);
+        setCurrentIndex(Math.max(0, Math.min(index, TRACKS.length - 1)));
     };
-    
-    const togglePlayPause = () => {
-        setIsPlaying((prev) => !prev);
-    };
+
+    const togglePlayPause = () => setIsPlaying(prev => !prev);
 
     const ToggleShuffle = () => {
-        setIsShuffle((prev) => !prev);
+        setIsShuffle(prev => !prev);
         setHistory([]);
-        //optional: clears shuffle history when toggling
     };
 
-    // Repeat cycle : off -> all -> one -> off 
     const ToggleRepeat = () => {
-        setRepeatMode((prev) => {
+        setRepeatMode(prev => {
             if (prev === 'off') return 'all';
             if (prev === 'all') return 'one';
             return 'off';
@@ -64,106 +94,102 @@ const App1: React.FC = () => {
     };
 
     const handleNext = () => {
-        // Repeat-one: keep same song (Spotify-like feel)
-        if (repeatMode === 'one') {
-            goToIndex(currentIndex);
-            return;
-        }
-
-        //Shuffle
+        if (repeatMode === 'one') { goToIndex(currentIndex); return; }
         if (isShuffle) {
             const total = TRACKS.length;
-
-            // if only 1 track, no need random 
             if (total <= 1) return;
-            //why return at the back 
-
             let next = currentIndex;
-            while (next === currentIndex) {
-                next = Math.floor(Math.random() * total);
-            }
-            //take look for math 
-
-            setHistory((h) => [...h, currentIndex]);//save current to history, so prev can go back 
+            while (next === currentIndex) next = Math.floor(Math.random() * total);
+            setHistory(h => [...h, currentIndex]);
             goToIndex(next);
             return;
         }
-
-        //Normal order 
-        const isLast = currentIndex === TRACKS.length - 1;// need to take note here 
+        const isLast = currentIndex === TRACKS.length - 1;
         if (isLast) {
-            if (repeatMode === 'all') {
-                goToIndex(0); //loop to start
-            }else{
-                setIsPlaying(false); //stop playing at the end
-            }
-        }else{
+            if (repeatMode === 'all') goToIndex(0);
+            else setIsPlaying(false);
+        } else {
             goToIndex(currentIndex + 1);
         }
     };
 
     const handlePrevious = () => {
-        // In Spotify, "restrat if ?3s" needs currentTime from audio,
-        // so we keep App's prev as "navigation only"
-        // simplify this term 
-
-        if (isShuffle){
-            setHistory((h) => {
+        if (isShuffle) {
+            setHistory(h => {
                 if (h.length === 0) return h;
-                const copy = [...h]; // creates shallow copy "copy" avoid mutate the original state directly
-                const prevIndex = copy.pop() as number;//copy.pop remove the last item from the array and returns it
-                goToIndex(prevIndex);
+                const copy = [...h];
+                const prev = copy.pop() as number;
+                goToIndex(prev);
                 return copy;
             });
-            return;// return here to avoid running normal previous logic
+            return;
         }
-
-        const isFirst = currentIndex === 0;
-        if (isFirst) {
-            if (repeatMode ==='all') {
-                goToIndex(TRACKS.length - 1);
-            }else{
-                goToIndex(0);
-            }
-        }else{
+        if (currentIndex === 0) {
+            if (repeatMode === 'all') goToIndex(TRACKS.length - 1);
+            else goToIndex(0);
+        } else {
             goToIndex(currentIndex - 1);
         }
     };
 
-    //When audio ends naturally 
-    const handleEnded = () => {
-        handleNext();
-    };
+    const handleEnded = () => handleNext();
 
     const handleSelectTrack = (id: number) => {
-        const index = TRACKS.findIndex((t) => t.id === id);
-        if (index !== -1) {
-            goToIndex(index);
-            setIsPlaying(true);
-        }
+        const index = TRACKS.findIndex(t => t.id === id);
+        if (index !== -1) { goToIndex(index); setIsPlaying(true); }
     };
 
     return (
-        <div className="app">
-            <MusicPlayer
-                currentTrack={currentTrack}
-                isPlaying={isPlaying}
-                isShuffle={isShuffle}
-                isRepeat={repeatMode !== 'off'}
-                onEnded={handleEnded}
-                onTogglePlayPause={togglePlayPause}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                onToggleShuffle={ToggleShuffle}
-                onToggleRepeat={ToggleRepeat}
-            />
+        <>
+            {/* Trigger — shown when window is closed */}
+            {!isOpen && (
+                <div className="app-trigger-wrapper">
+                    <button className="app-trigger" onClick={openWindow} aria-label="Open Music Player">
+                        <FaMusic size={30} />
+                    </button>
+                    <span className="app-trigger-label">Music Player</span>
+                </div>
+            )}
 
-            <TrackList
-                songs={TRACKS}
-                currentIndex={currentIndex}
-                onSelectTrack={handleSelectTrack}
-            />
-        </div>
+            {/* Floating window */}
+            {isOpen && (
+                <div
+                    className="app-window"
+                    style={{ transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px))` }}
+                >
+                    {/* Title bar */}
+                    <div className="window-titlebar" onMouseDown={handleTitlebarMouseDown}>
+                        <div className="window-controls">
+                            <button
+                                className="win-btn win-close"
+                                onClick={() => setIsOpen(false)}
+                                title="Close"
+                            />
+                            <button className="win-btn win-minimize" title="Minimize" />
+                            <button className="win-btn win-maximize" title="Maximize" />
+                        </div>
+                        <div className="window-title">Music Player</div>
+                    </div>
+
+                    {/* Player content */}
+                    <MusicPlayer
+                        currentTrack={currentTrack}
+                        isPlaying={isPlaying}
+                        isShuffle={isShuffle}
+                        isRepeat={repeatMode !== 'off'}
+                        tracks={TRACKS}
+                        currentIndex={currentIndex}
+                        onEnded={handleEnded}
+                        onTogglePlayPause={togglePlayPause}
+                        onNext={handleNext}
+                        onPrevious={handlePrevious}
+                        onToggleShuffle={ToggleShuffle}
+                        onToggleRepeat={ToggleRepeat}
+                        onSelectTrack={handleSelectTrack}
+                    />
+                </div>
+            )}
+        </>
     );
 };
 

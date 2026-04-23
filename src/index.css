@@ -1,25 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'DM Sans', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color-scheme: dark;
+  color: #fff;
+  background-color: #0f0f0f;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -28,164 +19,244 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  background: #0f0f0f;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-/* ── Player Card ── */
-.player-card {
-  position: relative;
-  width: 580px;
-  height: 280px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-}
-
-.card-bg {
-  position: absolute;
-  inset: -20px;
-  background-size: cover;
-  background-position: center;
-  filter: blur(22px) brightness(0.75) saturate(1.4);
-  z-index: 0;
-}
-
-.card-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.18);
-  z-index: 1;
-}
-
-.card-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
+/* ── Trigger (closed state) ── */
+.app-trigger-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 22px;
-  box-sizing: border-box;
+  gap: 14px;
 }
 
-.corner-btn {
-  position: absolute;
-  z-index: 3;
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
+.app-trigger {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: #e8a045;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  box-shadow: 0 0 48px rgba(232, 160, 69, 0.18), 0 8px 32px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   padding: 0;
 }
 
-.btn-repeat {
-  top: 18px;
-  left: 20px;
+.app-trigger:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 72px rgba(232, 160, 69, 0.32), 0 8px 40px rgba(0, 0, 0, 0.7);
 }
 
-.btn-shuffle {
-  top: 18px;
-  right: 20px;
+.app-trigger:active {
+  transform: scale(0.96);
 }
 
-/* ── Controls ── */
-.controls {
+.app-trigger-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
+}
+
+/* ── Floating window ── */
+.app-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 860px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.85), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  z-index: 100;
+  animation: window-fade-in 0.2s ease;
+}
+
+@keyframes window-fade-in {
+  from { opacity: 0; transform: translate(calc(-50% + 0px), calc(-50% + 8px)); }
+  to   { opacity: 1; transform: translate(calc(-50% + 0px), calc(-50% + 0px)); }
+}
+
+/* ── Title bar ── */
+.window-titlebar {
+  background: #161616;
+  height: 40px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 12px;
+  padding: 0 16px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.07);
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
 }
 
-.ctrl-btn {
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  color: white;
+.window-titlebar:active {
+  cursor: grabbing;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.win-btn {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.win-btn:hover {
+  filter: brightness(1.2);
+}
+
+.win-close    { background: #ff5f57; }
+.win-minimize { background: #ffbd2e; }
+.win-maximize { background: #28c840; }
+
+.window-title {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
+
+/* mp-root inside the window loses its own border-radius (window handles it) */
+.app-window .mp-root {
+  border-radius: 0;
+}
+
+/* ── Player root ── */
+.mp-root {
+  font-family: 'DM Sans', sans-serif;
+  background: #0f0f0f;
+  min-height: 580px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  user-select: none;
+}
+
+/* ── Background glow ── */
+.mp-bg-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+
+/* ── Carousel ── */
+.mp-carousel {
+  position: relative;
+  z-index: 1;
+  height: 280px;
+  display: flex;
+  align-items: flex-end;
   justify-content: center;
-  transition: background 0.2s, transform 0.15s;
+  padding: 32px 0 20px;
+  perspective: 900px;
 }
 
-.ctrl-btn.prev,
-.ctrl-btn.next {
-  width: 42px;
-  height: 42px;
+.mp-card {
+  position: absolute;
+  width: 160px;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
 }
 
-.ctrl-btn.play {
-  width: 52px;
-  height: 52px;
-  border-width: 2px;
-}
-
-.ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: scale(1.1);
-}
-
-.ctrl-btn:active {
-  transform: scale(0.95);
-}
-
-.corner-btn:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.15);
-}
-
-/* ── Progress Bar ── */
-.progress-container {
+.mp-card img {
   width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.mp-card-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  padding: 24px 12px 10px;
+}
+
+.mp-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+.mp-card-artist {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Track info below carousel ── */
+.mp-mini-info {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 4px 0 16px;
+}
+
+.mp-track-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #fff;
+}
+
+.mp-track-artist {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+/* ── Progress area ── */
+.mp-progress-area {
+  position: relative;
+  z-index: 2;
   padding: 0 24px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.mp-progress-area .progress-container {
+  padding: 0;
 }
 
 .seek-bar {
@@ -196,8 +267,8 @@ button:focus-visible {
   border-radius: 2px;
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.9) var(--seek-pct, 0%),
-    rgba(255, 255, 255, 0.25) var(--seek-pct, 0%)
+    #e8a045 var(--seek-pct, 0%),
+    rgba(255, 255, 255, 0.18) var(--seek-pct, 0%)
   );
   border: none;
   outline: none;
@@ -212,7 +283,7 @@ button:focus-visible {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: white;
+  background: #e8a045;
   cursor: pointer;
   transition: transform 0.15s;
 }
@@ -221,7 +292,7 @@ button:focus-visible {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: white;
+  background: #e8a045;
   border: none;
   cursor: pointer;
   transition: transform 0.15s;
@@ -238,8 +309,112 @@ button:focus-visible {
 .time-info {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.65);
-  padding: 0 2px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ── Controls bar ── */
+.mp-controls-bar {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 0 0 24px 24px;
+  padding: 14px 20px 18px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: auto;
+}
+
+.mp-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp-playing-info {
+  flex: 1;
+  margin: 0 12px;
+  min-width: 0;
+}
+
+.mp-bar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+.mp-bar-artist {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 1px;
+}
+
+/* ── Buttons ── */
+.mp-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mp-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+
+.mp-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.mp-btn:active {
+  transform: scale(0.93);
+}
+
+.mp-btn.play-main {
+  background: #e8a045;
+  color: #0f0f0f;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 4px;
+}
+
+.mp-btn.play-main:hover {
+  background: #f5b558;
+  color: #0f0f0f;
+}
+
+.mp-extras {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
 }
