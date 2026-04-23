@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaRandom, FaRedo } from 'react-icons/fa';
+import { FaRandom, FaRedo, FaList } from 'react-icons/fa';
 import ProgressBar from './progress_Bar';
 import Controls from './control';
 
@@ -61,6 +61,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [isTracklistOpen, setIsTracklistOpen] = useState(false);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -138,7 +139,32 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
             </div>
 
-            <div className="mp-controls-bar">
+                {isTracklistOpen && (
+                <div className="tracklist-panel">
+                    <div className="tracklist-header">
+                        <span>Playlist</span>
+                        <button onClick={() => setIsTracklistOpen(false)} aria-label="Close playlist">✕</button>
+                    </div>
+                    <ul className="tracklist-items">
+                        {tracks.map((track, i) => (
+                            <li
+                                key={track.id}
+                                className={`tracklist-item${i === currentIndex ? ' active' : ''}`}
+                                onClick={() => { onSelectTrack(track.id); setIsTracklistOpen(false); }}
+                            >
+                                <img src={track.artwork} alt={track.title} />
+                                <div className="tl-info">
+                                    <div className="tl-title">{track.title}</div>
+                                    <div className="tl-artist">{track.artist}</div>
+                                </div>
+                                {i === currentIndex && <span className="tl-playing">♪</span>}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+        <div className="mp-controls-bar">
                 <div className="mp-thumb">
                     <img src={currentTrack.artwork} alt={currentTrack.title} />
                 </div>
@@ -170,6 +196,15 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                         style={{ color: isRepeat ? '#e8a045' : 'rgba(255,255,255,0.6)' }}
                     >
                         <FaRedo size={14} />
+                    </button>
+                    <button
+                        type="button"
+                        className="mp-btn"
+                        onClick={() => setIsTracklistOpen(prev => !prev)}
+                        aria-label="Playlist"
+                        style={{ color: isTracklistOpen ? '#e8a045' : 'rgba(255,255,255,0.6)' }}
+                    >
+                        <FaList size={14} />
                     </button>
                 </div>
             </div>
