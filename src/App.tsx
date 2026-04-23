@@ -11,11 +11,11 @@ type Track = {
 };
 
 const TRACKS: Track[] = [
-    { id: 1, title: 'Lautan',           artist: 'Yuna',          src: "/assets/songs/lautan.mp3",           artwork: "/assets/artwork/lautan.jpg" },
-    { id: 2, title: 'Akad',             artist: 'Payung Teduh',  src: "/assets/songs/akad.mp3",             artwork: "/assets/artwork/akad.jpg" },
-    { id: 3, title: 'Sency',            artist: 'dia & Tenxi',   src: "/assets/songs/sency.mp3",            artwork: "/assets/artwork/sency.jpg" },
-    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh',    src: "/assets/songs/bunga-di-telinga.mp3", artwork: "/assets/artwork/bunga-di-telinga.jpg" },
-    { id: 5, title: 'Sempurna',         artist: 'Insomniacs',    src: "/assets/songs/sempurna.mp3",         artwork: "/assets/artwork/sempurna.jpg" },
+    { id: 1, title: 'Lautan',           artist: 'Yuna',          src: "/assets/songs/lautan.mp3",           artwork: "/assets/artwork/yuna_lautan_image.jpg" },
+    { id: 2, title: 'Akad',             artist: 'Payung Teduh',  src: "/assets/songs/akad.mp3",             artwork: "/assets/artwork/akad_payungteduh_image.jpg" },
+    { id: 3, title: 'Sency',            artist: 'dia & Tenxi',   src: "/assets/songs/sency.mp3",            artwork: "/assets/artwork/sency_dia&tenxi_image.jpg" },
+    { id: 4, title: 'Bunga Di Telinga', artist: 'Noh Salleh',    src: "/assets/songs/bunga-di-telinga.mp3", artwork: "/assets/artwork/bungaditelinga_nohsalleh_image.jpg" },
+    { id: 5, title: 'Sempurna',         artist: 'Insomniacs',    src: "/assets/songs/sempurna.mp3",         artwork: "/assets/artwork/sempurn_insomniacks_image.jpg" },
 ];
 
 type RepeatMode = 'off' | 'one' | 'all';
